@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        tr:hover {
+            background-color: lightgreen;
+        }
+        
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        table {
+            width: 100%;
+        }
+        
+        ;
+    </style>
+</head>
+
+<body>
+    <div class="topnav">
+        <a class="active" href="#home">Navegador de Archivos</a>
+        <!-- <a href="#news">News</a> -->
+        <a id="home-user"></a>
+        <a href="index.html">Logout</a>
+    </div>
+    <h1>Navegador de archivos</h1>
+    <form ref='uploadForm' id='uploadForm' action='https://localhost:8080/upload' method='post' encType="multipart/form-data">
+        <input type="file" name="sampleFile" />
+        <input type='submit' value='Upload!' />
+    </form>
+    <button onclick="verify()">Verificar</button>
+    <div id="fileTable">
+        <table>
+            <tr>
+                <th>Archivo</th>
+                <th>Lastname</th>
+            </tr>
+        </table>
+    </div>
+
+</body>
+<script src="/home.js"></script>
+
+</html>

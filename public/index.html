@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>Pagina Web TLS</title>
+</head>
+
+
+<body>
+    <div class="topnav">
+        <a class="active" href="#home">Home</a>
+        <!-- <a href="#news">News</a> -->
+        <a onclick="document.getElementById('id01').style.display='block'">Login</a>
+        <a onclick="document.getElementById('id02').style.display='block'">Register</a>
+    </div>
+    <h1>Firma de Documentos Web</h1>
+
+
+
+    <!-- The Login Modal -->
+    <div id="id01" class="modal">
+        <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+
+        <!-- Modal Content -->
+        <form class="modal-content ">
+
+            <div class="container">
+                <label for="uname"><b>Email</b></label>
+                <input type="text" placeholder="Enter email" name="uname" id="Lemail" required>
+
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="Lpsswd" id="Lpsswd" required>
+
+                <button id="loginbtn" class="loginbtn">Login</button>
+                <label>
+      </label>
+            </div>
+
+            <div class="container" style="background-color:#f1f1f1">
+                <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <!-- The Register Modal -->
+    <div id="id02" class="modal">
+        <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
+
+        <!-- Modal Content -->
+        <form class="modal-content animate">
+
+            <div class="container">
+                <label for="email"><b>Email</b></label>
+                <input type="text" placeholder="Enter Email" name="email" id="Remail" required>
+
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psswd" id="Rpsswd" required>
+
+                <label for="email"><b>Email</b></label>
+                <input type="text" placeholder="Enter Email" name="name" id="Rname" required>
+                </label>
+                <button id="registerbtn" class="registerbtn">Register</button>
+            </div>
+
+            <div class="container" style="background-color:#f1f1f1">
+                <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+
+<script src="/index.js"></script>
+
+
+</html>
