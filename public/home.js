@@ -21,18 +21,20 @@ function showfiles(data) {
     var filesList = `<table> 
     <tr>
         <th>Archivo</th>
-            <th>Lastname</th>
+        <th>QR Code</th>
+        <th>Verify</th>
     </tr>
     {{files}}
     </table>`;
 
     var filesListItem = `<tr>
 <td>{{filename}}</td>
+<td><a href="/qrcodes/qr_{{filename3}}.html">QR Code</a></td>
 <td><button onclick="verify('{{filename2}}')">Verificar</button></td>
 <tr>`;
     let filesHTML = '';
     data.map(item => {
-        filesHTML += filesListItem.replace('{{filename}}', item).replace('{{filename2}}', item);
+        filesHTML += filesListItem.replace('{{filename}}', item).replace('{{filename2}}', item).replace('{{filename3}}', item);
     });
     const tableHTML = filesList.replace('{{files}}', filesHTML);
     document.getElementById('fileTable').innerHTML = tableHTML;

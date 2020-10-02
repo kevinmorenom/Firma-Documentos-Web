@@ -6,6 +6,7 @@ var fs = require('fs');
 var crypto = require('crypto');
 var File = require('../models/files');
 var globby = require('globby');
+var qrcode = require('qrcode');
 
 app.use(require('./login'));
 // app.use(require('./register'));
@@ -60,6 +61,14 @@ app.post('/upload', function(req, res) {
             // console.log('Digital Signature: ', signature);
             //Guardamos la firma en la carpeta de los archivos firmados
             fs.writeFileSync('public/signedfiles/signed_' + req.files.sampleFile.name, signature);
+
+            run().catch(error => console.error(error.stack));
+
+            async function run() {
+                const res = await qrcode.toDataURL(signature);
+
+                fs.writeFileSync('public/qrcodes/qr_' + req.files.sampleFile.name + '.html', `<img src="${res}">`);
+            }
             res.redirect('/home.html');
         }
     });
