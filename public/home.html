@@ -24,32 +24,74 @@
             width: 100%;
         }
         
-        ;
+        #logsR {
+            display: none;
+        }
     </style>
 </head>
 
 <body>
     <div class="topnav">
-        <a class="active" href="#home">Navegador de Archivos</a>
-        <!-- <a href="#news">News</a> -->
+        <a id="navbtn" onclick="prueba('2')" class="active" href="#home">Navegador de Archivos</a>
+        <a id="logbtn" onclick="prueba('1')">Logs Register</a>
         <a id="home-user"></a>
+        <a id="editbtn" onclick="document.getElementById('edit').style.display='block'">Editar Cuenta</a>
         <a href="index.html">Logout</a>
     </div>
-    <h1>Navegador de archivos</h1>
-    <form ref='uploadForm' id='uploadForm' action='https://localhost:8080/upload' method='post' encType="multipart/form-data">
-        <input type="file" name="sampleFile" />
-        <input type='submit' value='Upload!' />
-    </form>
-    <!-- // <button onclick="verify()">Verificar</button> -->
-    <div id="fileTable">
-        <table>
-            <tr>
-                <th>Archivo</th>
-                <th>Actions</th>
-            </tr>
-        </table>
+    <div id="navegador">
+        <h1>Navegador de archivos</h1>
+        <form ref='uploadForm' id='uploadForm' action='https://localhost:8080/upload' method='post' encType="multipart/form-data">
+            <input type="file" name="sampleFile" />
+            <input type='submit' value='Upload!' />
+        </form>
+        <!-- // <button onclick="verify()">Verificar</button> -->
+        <div id="fileTable">
+            <table>
+                <tr>
+                    <th>Archivo</th>
+                    <th>Actions</th>
+                </tr>
+            </table>
+        </div>
     </div>
+    <div id="logsR">
+        <h1>Inicios de sesión</h1>
+        <div id="logTable">
+            <table>
+                <tr>
+                    <th>Archivo</th>
+                    <th>Actions</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!-- The Edit Modal -->
+    <div id="edit" class="modal">
+        <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
 
+        <!-- Modal Content -->
+        <form class="modal-content animate">
+
+            <div class="container">
+                <label for="email"><b>Nuevo Nombre</b></label>
+                <input type="text" placeholder="Enter Name" name="name" id="newname" required>
+                </label>
+
+                <label for="email"><b>Nuevo Email</b></label>
+                <input type="text" placeholder="Enter Email" name="email" id="newemail" required>
+
+                <label for="psw"><b>Ingresa contraseña</b></label>
+                <input type="password" placeholder="contraseña" name="psswd" id="psswd" required>
+
+
+                <button id="2editbtn" class="registerbtn">Apply changes</button>
+            </div>
+
+            <div class="container" style="background-color:#f1f1f1">
+                <button type="button" onclick="document.getElementById('edit').style.display='none'" class="cancelbtn">Cancel</button>
+            </div>
+        </form>
+    </div>
 </body>
 <script src="/home.js"></script>
 

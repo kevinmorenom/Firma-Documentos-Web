@@ -9,6 +9,30 @@
     padding: 16px;
 }
 
+#imagediv img {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+#autherror {
+    background-color: lightcoral;
+    color: white;
+    font-weight: bold;
+    display: none;
+}
+
+#edit {
+    display: none;
+}
+
+div#imagediv {
+    min-width: 250px;
+    min-height: 250px;
+    padding: 13px;
+    display: inline-block;
+}
+
 
 /* Full-width input fields */
 
@@ -125,7 +149,8 @@ a {
     cursor: pointer;
 }
 
-.loginbtn {
+.loginbtn,
+.enterbtn {
     background-color: lightseagreen;
     color: white;
     padding: 16px 20px;

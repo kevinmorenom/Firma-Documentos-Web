@@ -4,7 +4,7 @@ var bcrypt = require('bcrypt');
 var User = require('../models/user');
 var fs = require('fs');
 var crypto = require('crypto');
-var File = require('../models/files');
+var Logs = require('../models/logs');
 var globby = require('globby');
 var qrcode = require('qrcode');
 
@@ -87,7 +87,7 @@ app.get('/files', async function(req, res) {
 
 app.post('/verify', function(req, res) {
 
-    console.log(req.body.name);
+    // console.log(req.body.name);
 
 
     // Leemos el archivo de clave publica
@@ -106,12 +106,60 @@ app.post('/verify', function(req, res) {
 
     // result = false o true
     var result = verifier.verify(public_key, signatured2, 'base64');
-    console.log('Digital Signature Verification : ' + result);
+    // console.log('Digital Signature Verification : ' + result);
     if (result == false) {
         return res.status(250).send('Verificación Fallida');
     } else {
         return res.status(200).send('Verificación Exitosa');
     }
+
+});
+
+app.post('/edit', async function(req, res) {
+    let body = req.body;
+    User.findOne({ email: body.email }, (erro, userDB) => {
+        if (erro) {
+            return res.status(500).json({
+                ok: false,
+                err: erro
+            })
+        }
+        // Verifica que exista un usuario con el mail escrita por el usuario.
+        if (!userDB) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: "Usuario o contraseña incorrectos"
+                }
+            });
+        }
+        // Valida que la contraseña escrita por el usuario, sea la almacenada en la db
+        if (!bcrypt.compareSync(body.psswd, userDB.psswd)) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: "Usuario o contraseña incorrectos"
+                }
+            });
+        } else {
+            // console.log("bla");
+            User.updateOne({ "email": body.email }, { $set: { "email": body.newemail, "nombre": body.newnombre } }, function(err, result) {
+                // console.log("item Updated");
+                // console.log(body);
+                res.json({
+                    ok: true,
+                    email: body.newemail,
+                    nombre: body.newname,
+                });
+            });
+
+        }
+
+
+        // console.log(body);
+
+
+    });
 
 });
 
