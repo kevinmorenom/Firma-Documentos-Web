@@ -7,17 +7,103 @@ var crypto = require('crypto');
 var Logs = require('../models/logs');
 var globby = require('globby');
 var qrcode = require('qrcode');
+const zlib = require('zlib');
+const speakeasy = require('speakeasy');
+const date = require('date-and-time');
 
+const AppendInitVect = require('./appendInitVect');
+const getCipherKey = require('./getCipherKey');
 app.use(require('./login'));
 // app.use(require('./register'));
+app.post('/encryption', function(req, res) {
+    // Generate a secure, pseudo random initialization vector.
+    const initVect = crypto.randomBytes(16);
+
+    // Generate a cipher key from the password.
+    const CIPHER_KEY = getCipherKey(req.body.password);
+    const readStream = fs.createReadStream('public/files/' + req.body.file);
+    const gzip = zlib.createGzip();
+    const cipher = crypto.createCipheriv('aes256', CIPHER_KEY, initVect);
+    const appendInitVect = new AppendInitVect(initVect);
+    // Create a write stream with a different file extension.
+    const writeStream = fs.createWriteStream('public/files/' + req.body.file + '.enc');
+    readStream
+        .pipe(gzip)
+        .pipe(cipher)
+        .pipe(appendInitVect)
+        .pipe(writeStream);
+    fs.unlinkSync('public/files/' + req.body.file);
+    res.send("File Encrypted");
+});
+
+app.post('/decryption', function(req, res) {
+    const readInitVect = fs.createReadStream('public/files/' + req.body.file, { end: 15 });
+
+    // Wait to get the initVect.
+    let initVect;
+    readInitVect.on('data', (chunk) => {
+        initVect = chunk;
+    });
+    let errors = 0;
+    // Once we’ve got the initialization vector, we can decrypt the file.
+    readInitVect.on('close', () => {
+        const CIPHER_KEY = getCipherKey(req.body.password);
+        const readStream = fs.createReadStream('public/files/' + req.body.file, { start: 16 });
+        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, initVect);
+        const unzip = zlib.createUnzip();
+        const writeStream = fs.createWriteStream('public/files/' + req.body.file + '.unenc');
+
+
+        readStream
+            .pipe(decipher).on('error', err => {
+                console.log(err);
+                errors = 1;
+                console.log(errors);
+
+            })
+            .pipe(unzip).on('error', err => {
+                console.log(err);
+                errors = 2;
+                console.log(errors);
+
+            })
+            .pipe(writeStream).on('error', err => {
+                console.log(err);
+                errors = 3;
+                console.log(errors);
+            });
+        writeStream.on('open', function() {
+            console.log(errors);
+            var filename = 'public/files/' + req.body.file.replace(".enc", "").replace(".unenc", "");
+            fs.rename('public/files/' + req.body.file + '.unenc', filename, function(err) {
+                if (err) throw err;
+                console.log('File Renamed.');
+                fs.unlinkSync('public/files/' + req.body.file);
+                res.json({
+                    ok: true,
+                    errors: errors
+                });
+            });
+        });
+    });
+
+});
+
 app.post('/register', function(req, res) {
     let body = req.body;
     let { email, psswd, nombre } = body;
+    var now = new Date();
+    var secret = speakeasy.generateSecret({
+        name: (body.email + " " + date.format(now, 'hh:mm, MMM DD'))
+    });
+    let usuario;
     let user = new User({
         email,
         psswd: bcrypt.hashSync(psswd, 10),
         nombre,
+        secret: secret.ascii
     });
+
     user.save((err, userDB) => {
         if (err) {
             return res.status(400).json({
@@ -25,9 +111,14 @@ app.post('/register', function(req, res) {
                 err,
             });
         }
+        usuario = userDB;
+    });
+
+    qrcode.toDataURL(secret.otpauth_url, function(err, data) {
         res.json({
             ok: true,
-            user: userDB
+            usuario: usuario,
+            data
         });
     });
 });
@@ -142,14 +233,21 @@ app.post('/edit', async function(req, res) {
                 }
             });
         } else {
+            var now = new Date();
+            var secret = speakeasy.generateSecret({
+                name: (body.email + " " + date.format(now, 'hh:mm, MMM DD'))
+            });
             // console.log("bla");
-            User.updateOne({ "email": body.email }, { $set: { "email": body.newemail, "nombre": body.newnombre } }, function(err, result) {
+            User.updateOne({ "email": body.email }, { $set: { "email": body.newemail, "nombre": body.newname, "secret": secret.ascii } }, function(err, result) {
                 // console.log("item Updated");
                 // console.log(body);
-                res.json({
-                    ok: true,
-                    email: body.newemail,
-                    nombre: body.newname,
+                qrcode.toDataURL(secret.otpauth_url, function(err, data) {
+                    res.json({
+                        ok: true,
+                        email: body.newemail,
+                        nombre: body.newname,
+                        data
+                    });
                 });
             });
 
@@ -162,5 +260,7 @@ app.post('/edit', async function(req, res) {
     });
 
 });
+
+
 
 module.exports = app;

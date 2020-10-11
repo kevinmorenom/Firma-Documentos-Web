@@ -15,6 +15,10 @@ let userSchema = mongoose.Schema({
     nombre: {
         type: String,
         required: true
+    },
+    secret: {
+        type: String,
+        required: true
     }
 });
 

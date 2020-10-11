@@ -16,19 +16,20 @@ loginbtn.addEventListener("click", function(event) {
     let objeto = {
         email: document.getElementById("Lemail").value,
         psswd: document.getElementById("Lpsswd").value,
+        code: document.getElementById("code").value,
     }
     login(objeto);
     event.preventDefault();
 });
 
-enterbtn.addEventListener("click", function(event) {
-    let objeto = {
-        code: document.getElementById("code").value,
-        name: document.getElementById("Lemail").value
-    };
-    auth(objeto);
-    event.preventDefault();
-});
+// enterbtn.addEventListener("click", function(event) {
+//     let objeto = {
+//         code: document.getElementById("code").value,
+//         name: document.getElementById("Lemail").value
+//     };
+//     auth(objeto);
+//     event.preventDefault();
+// });
 
 function registrar(datos) {
     // 1. Crear XMLHttpRequest object
@@ -44,8 +45,12 @@ function registrar(datos) {
         if (xhr.status != 200) {
             alert('Error, ya existe una usuario con ese correo\n' + xhr.statusText);
         } else if (xhr.status == 200) {
-            alert('\n El usuario ha sido registrado con éxito');
-            window.location.href = "../index.html";
+            var res = JSON.parse(xhr.responseText);
+            console.log(res);
+            document.getElementById("imagediv").innerHTML = `<img src="` + res.data + `">`;
+            document.getElementById("QRauth").click();
+            document.getElementById("closeRegister").click();
+            // window.location.href = "../index.html";
         }
     };
 
@@ -67,11 +72,12 @@ function login(datos) {
         } else if (xhr.status == 200) {
             //alert('\n Has iniciado sesion exitosamente');
             var res = JSON.parse(xhr.responseText);
-            document.getElementById("imagediv").innerHTML = `<img src="` + res.data + `">`;
-            document.getElementById("QRauth").click();
+            console.log(res);
+            // document.getElementById("imagediv").innerHTML = `<img src="` + res.data + `">`;
+            // document.getElementById("QRauth").click();
             localStorage.setItem("usuario", res.usuario.nombre);
             localStorage.setItem("email", res.usuario.email);
-            //window.location.href = "../home.html";
+            window.location.href = "../home.html";
 
         }
     };

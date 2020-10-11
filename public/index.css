@@ -15,6 +15,12 @@
     display: block;
 }
 
+#newimagediv img {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
 #autherror {
     background-color: lightcoral;
     color: white;

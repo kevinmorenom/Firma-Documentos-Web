@@ -31,3 +31,22 @@ Content-Type: application/json
     "newemail":"is714719@iteso.mx",
     "newnombre":"RuvA"
 }
+###
+
+POST https://localhost:8080/encrypt
+Content-Type: application/json
+
+{
+    "file":"file.txt",
+    "password":"holahola"
+}
+###
+
+POST https://localhost:8080/decrypt
+Content-Type: application/json
+
+{
+    "file":"file.txt.enc",
+    "password":"holahola"
+}
+###

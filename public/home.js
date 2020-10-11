@@ -35,22 +35,55 @@ function showfiles(data) {
     <tr>
         <th>Archivo</th>
         <th>QR Code</th>
-        <th>Verify</th>
+        <th>Actions</th>
     </tr>
     {{files}}
     </table>`;
 
     var filesListItem = `<tr>
 <td>{{filename}}</td>
-<td><a href="/qrcodes/qr_{{filename3}}.html">QR Code</a></td>
-<td><button onclick="verify('{{filename2}}')">Verificar</button></td>
+<td><a href="/qrcodes/qr_{{filename}}.html">QR Code</a></td>
+<td>
+    <button class onclick="verify('{{filename}}')">Verificar</button>
+    <button id="encrypt " onclick="encrypt('{{filename}}')">Encrypt</button>
+    <button id="decrypt" onclick="decrypt('{{filename}}')">Decrypt</button>
+</td>
 <tr>`;
     let filesHTML = '';
     data.map(item => {
-        filesHTML += filesListItem.replace('{{filename}}', item).replace('{{filename2}}', item).replace('{{filename3}}', item);
+        filesHTML += filesListItem.replaceAll('{{filename}}', item);
+        // filesHTML += filesListItem.replace('{{filename}}', item).replace('{{filename2}}', item).replace('{{filename3}}', item).replace('{{filename4}}', item).replace('{{filename5}}', item);
     });
     const tableHTML = filesList.replace('{{files}}', filesHTML);
     document.getElementById('fileTable').innerHTML = tableHTML;
+}
+
+function encrypt(data) {
+    document.getElementById('encrypt_modal').style.display = 'block';
+    document.getElementById('enc_btn').addEventListener("click", function(event) {
+        let objeto = {
+            file: data,
+            password: document.getElementById("enc_psswd").value,
+        };
+        console.log(objeto);
+        encrypt2(objeto);
+        event.preventDefault();
+    });
+
+}
+
+function decrypt(data) {
+    document.getElementById('decrypt_modal').style.display = 'block';
+    document.getElementById('dec_btn').addEventListener("click", function(event) {
+        let objeto = {
+            file: data,
+            password: document.getElementById("dec_psswd").value,
+        };
+        console.log(objeto);
+        decrypt2(objeto);
+        event.preventDefault();
+    });
+
 }
 
 function verify(data) {
@@ -146,10 +179,59 @@ function edit(datos) {
         } else if (xhr.status == 200) {
             alert('\n Datos de Perfil Actualizados');
             var res = JSON.parse(xhr.responseText);
+            document.getElementById('edit').style.display = 'none';
+            document.getElementById("QRbtn").click();
+            document.getElementById("newimagediv").innerHTML = `<img src="` + res.data + `">`;
             localStorage.setItem("usuario", res.nombre);
             localStorage.setItem("email", res.email);
-            window.location.href = "../home.html";
+            // window.location.href = "../home.html";
         }
     };
 
+}
+
+function encrypt2(data) {
+    // 1. Crear XMLHttpRequest object
+    let xhr = new XMLHttpRequest();
+    // 2. Configurar: PUT actualizar archivo
+    xhr.open('POST', `https://localhost:8080/encryption`);
+    // 3. indicar tipo de datos JSON
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    // 4. Enviar solicitud a la red
+    xhr.send(JSON.stringify(data));
+    // 5. Una vez recibida la respuesta del servidor
+    xhr.onload = function() {
+
+        if (xhr.status != 200) {
+            alert('\n ' + xhr.responseText);
+            window.location.href = "../home.html";
+        } else if (xhr.status == 200) {
+            // alert('\n ' + xhr.responseText);
+            window.location.href = "../home.html";
+            //var res = JSON.parse(xhr.responseText);
+        }
+    };
+}
+
+function decrypt2(data) {
+    // 1. Crear XMLHttpRequest object
+    let xhr = new XMLHttpRequest();
+    // 2. Configurar: PUT actualizar archivo
+    xhr.open('POST', `https://localhost:8080/decryption`);
+    // 3. indicar tipo de datos JSON
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    // 4. Enviar solicitud a la red
+    xhr.send(JSON.stringify(data));
+    // 5. Una vez recibida la respuesta del servidor
+    xhr.onload = function() {
+        var res = JSON.parse(xhr.responseText);
+        if (res.errors != 0) {
+            alert('Error\n ');
+            window.location.href = "../home.html";
+        } else if (xhr.status == 200) {
+            // alert('\n ' + xhr.responseText);
+            window.location.href = "../home.html";
+            //var res = JSON.parse(xhr.responseText);
+        }
+    };
 }

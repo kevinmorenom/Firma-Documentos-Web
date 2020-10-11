@@ -36,6 +36,7 @@
         <a id="logbtn" onclick="prueba('1')">Logs Register</a>
         <a id="home-user"></a>
         <a id="editbtn" onclick="document.getElementById('edit').style.display='block'">Editar Cuenta</a>
+        <a hidden id="QRbtn" onclick="document.getElementById('newQR').style.display='block'">newQR</a>
         <a href="index.html">Logout</a>
     </div>
     <div id="navegador">
@@ -82,13 +83,67 @@
 
                 <label for="psw"><b>Ingresa contraseña</b></label>
                 <input type="password" placeholder="contraseña" name="psswd" id="psswd" required>
-
-
                 <button id="2editbtn" class="registerbtn">Apply changes</button>
             </div>
 
             <div class="container" style="background-color:#f1f1f1">
                 <button type="button" onclick="document.getElementById('edit').style.display='none'" class="cancelbtn">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <!-- The Encrypt Modal -->
+    <div id="encrypt_modal" class="modal">
+        <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
+
+        <!-- Modal Content -->
+        <form class="modal-content animate">
+
+            <div class="container">
+                <label for="psw"><b>Ingresa contraseña para encriptación</b></label>
+                <input type="password" placeholder="contraseña" name="enc_psswd" id="enc_psswd" required>
+                <button id="enc_btn" class="registerbtn">Encriptar</button>
+            </div>
+
+            <div class="container" style="background-color:#f1f1f1">
+                <button type="button" onclick="document.getElementById('encrypt_modal').style.display='none'" class="cancelbtn">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <!-- The Decrypt Modal -->
+    <div id="decrypt_modal" class="modal">
+        <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
+
+        <!-- Modal Content -->
+        <form class="modal-content animate">
+
+            <div class="container">
+                <label for="psw"><b>Ingresa contraseña para desencriptación</b></label>
+                <input type="password" placeholder="contraseña" name="dec_psswd" id="dec_psswd" required>
+                <button id="dec_btn" class="registerbtn">Desencriptar</button>
+            </div>
+
+            <div class="container" style="background-color:#f1f1f1">
+                <button type="button" onclick="document.getElementById('decrypt_modal').style.display='none'" class="cancelbtn">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <!-- The Google Authenticator Modal -->
+    <div id="newQR" class="modal">
+        <span onclick="document.getElementById('newQR').style.display='none'" class="close" title="Close Modal">&times;</span>
+        <!-- Modal Content -->
+        <form class="modal-content ">
+            <div class="container">
+                <div id="newimagediv" style=" width:100%; height:100%">
+                    <!-- <img src="data:image/png;base64,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"> -->
+                </div>
+                <!-- <div hidden class="container" id="autherror">
+                    Código incorrecto, vuele a intentarlo.
+                </div>
+                <button id="enterbtn" class="enterbtn">Enter code</button> -->
+                <div class="container" style="background-color:#f1f1f1">
+                    <button type="button" onclick="document.getElementById('newQR').style.display='none'" class="cancelbtn"><a href="home.html">Close</a></button>
+                </div>
+
             </div>
         </form>
     </div>
