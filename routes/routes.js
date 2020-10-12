@@ -10,9 +10,11 @@ var qrcode = require('qrcode');
 const zlib = require('zlib');
 const speakeasy = require('speakeasy');
 const date = require('date-and-time');
-
 const AppendInitVect = require('./appendInitVect');
-const getCipherKey = require('./getCipherKey');
+//KEY PARA ENCRIPTAR
+const ENC_KEY = fs.readFileSync('keys/ENC_KEY.pem'); //32 caracteres =256 bits;
+
+
 app.use(require('./login'));
 // app.use(require('./register'));
 app.post('/encryption', function(req, res) {
@@ -20,10 +22,9 @@ app.post('/encryption', function(req, res) {
     const initVect = crypto.randomBytes(16);
 
     // Generate a cipher key from the password.
-    const CIPHER_KEY = getCipherKey(req.body.password);
     const readStream = fs.createReadStream('public/files/' + req.body.file);
     const gzip = zlib.createGzip();
-    const cipher = crypto.createCipheriv('aes256', CIPHER_KEY, initVect);
+    const cipher = crypto.createCipheriv('aes256', ENC_KEY, initVect);
     const appendInitVect = new AppendInitVect(initVect);
     // Create a write stream with a different file extension.
     const writeStream = fs.createWriteStream('public/files/' + req.body.file + '.enc');
@@ -47,9 +48,8 @@ app.post('/decryption', function(req, res) {
     let errors = 0;
     // Once we’ve got the initialization vector, we can decrypt the file.
     readInitVect.on('close', () => {
-        const CIPHER_KEY = getCipherKey(req.body.password);
         const readStream = fs.createReadStream('public/files/' + req.body.file, { start: 16 });
-        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, initVect);
+        const decipher = crypto.createDecipheriv('aes256', ENC_KEY, initVect);
         const unzip = zlib.createUnzip();
         const writeStream = fs.createWriteStream('public/files/' + req.body.file + '.unenc');
 
@@ -199,7 +199,11 @@ app.post('/verify', function(req, res) {
     var result = verifier.verify(public_key, signatured2, 'base64');
     // console.log('Digital Signature Verification : ' + result);
     if (result == false) {
+        fs.rename('public/files/' + req.body.name, 'public/files/CORRUPTED_' + req.body.name, function(err) {
+            if (err) throw err;
+        });
         return res.status(250).send('Verificación Fallida');
+
     } else {
         return res.status(200).send('Verificación Exitosa');
     }

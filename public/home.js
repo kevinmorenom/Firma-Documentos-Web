@@ -35,56 +35,79 @@ function showfiles(data) {
     <tr>
         <th>Archivo</th>
         <th>QR Code</th>
+        <th>Status</th>
         <th>Actions</th>
     </tr>
     {{files}}
     </table>`;
 
-    var filesListItem = `<tr>
-<td>{{filename}}</td>
-<td><a href="/qrcodes/qr_{{filename}}.html">QR Code</a></td>
+    var normal_btn =
+        `
 <td>
     <button class onclick="verify('{{filename}}')">Verificar</button>
     <button id="encrypt " onclick="encrypt('{{filename}}')">Encrypt</button>
-    <button id="decrypt" onclick="decrypt('{{filename}}')">Decrypt</button>
-</td>
+</td>`;
+    var corr_btn = `
+<td>
+No actions available
+</td>`;
+    var enc_btn =
+        `
+<td>
+<button id="decrypt" onclick="decrypt('{{filename}}')">Decrypt</button>
+</td>`;
+
+
+    var filesListItem = `<tr>
+<td>{{filename}}</td>
+<td><a href="/qrcodes/qr_{{filename}}.html">QR Code</a></td>
+<td>{{status}}</td>
+{{buttons}}
 <tr>`;
     let filesHTML = '';
     data.map(item => {
-        filesHTML += filesListItem.replaceAll('{{filename}}', item);
+        if (item.includes('.enc')) {
+            filesHTML += filesListItem.replace('{{buttons}}', enc_btn).replaceAll('{{filename}}', item).replace('{{status}}', 'ENCRYPTED');
+        } else if (item.includes('CORRUPTED')) {
+            filesHTML += filesListItem.replace('{{buttons}}', corr_btn).replaceAll('{{filename}}', item).replace('{{status}}', 'CORRUPTED').replace('CORRUPTED_', '');
+        } else {
+            filesHTML += filesListItem.replace('{{buttons}}', normal_btn).replaceAll('{{filename}}', item).replace('{{status}}', 'Verified');
+        }
+
+
         // filesHTML += filesListItem.replace('{{filename}}', item).replace('{{filename2}}', item).replace('{{filename3}}', item).replace('{{filename4}}', item).replace('{{filename5}}', item);
     });
     const tableHTML = filesList.replace('{{files}}', filesHTML);
     document.getElementById('fileTable').innerHTML = tableHTML;
 }
 
-function encrypt(data) {
-    document.getElementById('encrypt_modal').style.display = 'block';
-    document.getElementById('enc_btn').addEventListener("click", function(event) {
-        let objeto = {
-            file: data,
-            password: document.getElementById("enc_psswd").value,
-        };
-        console.log(objeto);
-        encrypt2(objeto);
-        event.preventDefault();
-    });
+// function encrypt(data) {
+//     document.getElementById('encrypt_modal').style.display = 'block';
+//     document.getElementById('enc_btn').addEventListener("click", function(event) {
+//         let objeto = {
+//             file: data,
+//             password: document.getElementById("enc_psswd").value,
+//         };
+//         console.log(objeto);
+//         encrypt2(objeto);
+//         event.preventDefault();
+//     });
 
-}
+// }
 
-function decrypt(data) {
-    document.getElementById('decrypt_modal').style.display = 'block';
-    document.getElementById('dec_btn').addEventListener("click", function(event) {
-        let objeto = {
-            file: data,
-            password: document.getElementById("dec_psswd").value,
-        };
-        console.log(objeto);
-        decrypt2(objeto);
-        event.preventDefault();
-    });
+// function decrypt(data) {
+//     document.getElementById('decrypt_modal').style.display = 'block';
+//     document.getElementById('dec_btn').addEventListener("click", function(event) {
+//         let objeto = {
+//             file: data,
+//             password: document.getElementById("dec_psswd").value,
+//         };
+//         console.log(objeto);
+//         decrypt2(objeto);
+//         event.preventDefault();
+//     });
 
-}
+// }
 
 function verify(data) {
     let filename = {
@@ -190,7 +213,11 @@ function edit(datos) {
 
 }
 
-function encrypt2(data) {
+function encrypt(data) {
+    let objeto = {
+        file: data,
+        // password: document.getElementById("enc_psswd").value,
+    };
     // 1. Crear XMLHttpRequest object
     let xhr = new XMLHttpRequest();
     // 2. Configurar: PUT actualizar archivo
@@ -198,7 +225,7 @@ function encrypt2(data) {
     // 3. indicar tipo de datos JSON
     xhr.setRequestHeader('Content-Type', 'application/json');
     // 4. Enviar solicitud a la red
-    xhr.send(JSON.stringify(data));
+    xhr.send(JSON.stringify(objeto));
     // 5. Una vez recibida la respuesta del servidor
     xhr.onload = function() {
 
@@ -213,7 +240,11 @@ function encrypt2(data) {
     };
 }
 
-function decrypt2(data) {
+function decrypt(data) {
+    let objeto = {
+        file: data,
+        // password: document.getElementById("enc_psswd").value,
+    };
     // 1. Crear XMLHttpRequest object
     let xhr = new XMLHttpRequest();
     // 2. Configurar: PUT actualizar archivo
@@ -221,7 +252,7 @@ function decrypt2(data) {
     // 3. indicar tipo de datos JSON
     xhr.setRequestHeader('Content-Type', 'application/json');
     // 4. Enviar solicitud a la red
-    xhr.send(JSON.stringify(data));
+    xhr.send(JSON.stringify(objeto));
     // 5. Una vez recibida la respuesta del servidor
     xhr.onload = function() {
         var res = JSON.parse(xhr.responseText);
