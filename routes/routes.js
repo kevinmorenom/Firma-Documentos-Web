@@ -58,26 +58,21 @@ app.post('/decryption', function(req, res) {
             .pipe(decipher).on('error', err => {
                 console.log(err);
                 errors = 1;
-                console.log(errors);
 
             })
             .pipe(unzip).on('error', err => {
                 console.log(err);
                 errors = 2;
-                console.log(errors);
 
             })
             .pipe(writeStream).on('error', err => {
                 console.log(err);
                 errors = 3;
-                console.log(errors);
             });
         writeStream.on('open', function() {
-            console.log(errors);
             var filename = 'public/files/' + req.body.file.replace(".enc", "").replace(".unenc", "");
             fs.rename('public/files/' + req.body.file + '.unenc', filename, function(err) {
                 if (err) throw err;
-                console.log('File Renamed.');
                 fs.unlinkSync('public/files/' + req.body.file);
                 res.json({
                     ok: true,
@@ -149,7 +144,6 @@ app.post('/upload', function(req, res) {
             //Devuelve la firma en base64
             var signature = signer.sign(private_key, 'base64');
 
-            // console.log('Digital Signature: ', signature);
             //Guardamos la firma en la carpeta de los archivos firmados
             fs.writeFileSync('public/signedfiles/signed_' + req.files.sampleFile.name, signature);
 
@@ -178,9 +172,6 @@ app.get('/files', async function(req, res) {
 
 app.post('/verify', function(req, res) {
 
-    // console.log(req.body.name);
-
-
     // Leemos el archivo de clave publica
     var public_key = fs.readFileSync('keys/publicKey.pem', 'utf-8');
 
@@ -197,7 +188,6 @@ app.post('/verify', function(req, res) {
 
     // result = false o true
     var result = verifier.verify(public_key, signatured2, 'base64');
-    // console.log('Digital Signature Verification : ' + result);
     if (result == false) {
         fs.rename('public/files/' + req.body.name, 'public/files/CORRUPTED_' + req.body.name, function(err) {
             if (err) throw err;
@@ -241,10 +231,8 @@ app.post('/edit', async function(req, res) {
             var secret = speakeasy.generateSecret({
                 name: (body.email + " " + date.format(now, 'hh:mm, MMM DD'))
             });
-            // console.log("bla");
             User.updateOne({ "email": body.email }, { $set: { "email": body.newemail, "nombre": body.newname, "secret": secret.ascii } }, function(err, result) {
-                // console.log("item Updated");
-                // console.log(body);
+
                 qrcode.toDataURL(secret.otpauth_url, function(err, data) {
                     res.json({
                         ok: true,
@@ -256,10 +244,6 @@ app.post('/edit', async function(req, res) {
             });
 
         }
-
-
-        // console.log(body);
-
 
     });
 

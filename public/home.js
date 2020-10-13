@@ -81,34 +81,6 @@ No actions available
     document.getElementById('fileTable').innerHTML = tableHTML;
 }
 
-// function encrypt(data) {
-//     document.getElementById('encrypt_modal').style.display = 'block';
-//     document.getElementById('enc_btn').addEventListener("click", function(event) {
-//         let objeto = {
-//             file: data,
-//             password: document.getElementById("enc_psswd").value,
-//         };
-//         console.log(objeto);
-//         encrypt2(objeto);
-//         event.preventDefault();
-//     });
-
-// }
-
-// function decrypt(data) {
-//     document.getElementById('decrypt_modal').style.display = 'block';
-//     document.getElementById('dec_btn').addEventListener("click", function(event) {
-//         let objeto = {
-//             file: data,
-//             password: document.getElementById("dec_psswd").value,
-//         };
-//         console.log(objeto);
-//         decrypt2(objeto);
-//         event.preventDefault();
-//     });
-
-// }
-
 function verify(data) {
     let filename = {
         name: data,
@@ -126,9 +98,11 @@ function verify(data) {
 
         if (xhr.status != 200) {
             alert('\n ' + xhr.responseText);
+            window.location.href = "../home.html";
         } else if (xhr.status == 200) {
             alert('\n ' + xhr.responseText);
-            //var res = JSON.parse(xhr.responseText);
+
+
         }
     };
 }

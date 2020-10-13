@@ -22,15 +22,6 @@ loginbtn.addEventListener("click", function(event) {
     event.preventDefault();
 });
 
-// enterbtn.addEventListener("click", function(event) {
-//     let objeto = {
-//         code: document.getElementById("code").value,
-//         name: document.getElementById("Lemail").value
-//     };
-//     auth(objeto);
-//     event.preventDefault();
-// });
-
 function registrar(datos) {
     // 1. Crear XMLHttpRequest object
     let xhr = new XMLHttpRequest();
@@ -46,7 +37,6 @@ function registrar(datos) {
             alert('Error, ya existe una usuario con ese correo\n' + xhr.statusText);
         } else if (xhr.status == 200) {
             var res = JSON.parse(xhr.responseText);
-            console.log(res);
             document.getElementById("imagediv").innerHTML = `<img src="` + res.data + `">`;
             document.getElementById("QRauth").click();
             document.getElementById("closeRegister").click();
@@ -70,11 +60,7 @@ function login(datos) {
         if (xhr.status != 200) {
             alert('Error\n' + xhr.statusText);
         } else if (xhr.status == 200) {
-            //alert('\n Has iniciado sesion exitosamente');
             var res = JSON.parse(xhr.responseText);
-            console.log(res);
-            // document.getElementById("imagediv").innerHTML = `<img src="` + res.data + `">`;
-            // document.getElementById("QRauth").click();
             localStorage.setItem("usuario", res.usuario.nombre);
             localStorage.setItem("email", res.usuario.email);
             window.location.href = "../home.html";
